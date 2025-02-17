@@ -1,0 +1,116 @@
+import speech_recognition as sr
+import datetime
+import pyttsx3
+import webbrowser
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+import wikipedia
+import pyautogui
+import time
+import pytesseract
+from PIL import ImageGrab
+
+engine = pyttsx3.init()
+engine.setProperty('rate', 200)
+engine.setProperty('volume', 1.0)
+
+SPOTIPY_CLIENT_ID = "5aacd5d171ff4e95b1615ac82436a7a1"
+SPOTIPY_CLIENT_SECRET = "e1451db628f048a29c4557041ef10d93"
+SPOTIPY_REDIRECT_URI = "http://localhost:8888/callback"
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
+                                               client_secret=SPOTIPY_CLIENT_SECRET,
+                                               redirect_uri=SPOTIPY_REDIRECT_URI,
+                                               scope="user-read-playback-state,user-modify-playback-state"))
+websites = {
+    "youtube": "https://www.youtube.com",
+    "google": "https://www.google.com",
+    "spotify": "https://www.spotify.com",
+    "wikipedia": "https://www.wikipedia.org"
+}
+
+def say(text):
+    engine.say(text)
+    engine.runAndWait()
+
+
+def take_command():
+    r = sr.Recognizer()
+
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.adjust_for_ambient_noise(source, duration=1)
+        audio = r.listen(source)
+
+        try:
+            query = r.recognize_google(audio, language="en-in")
+            print(f"USER SAID: {query}")
+            return query.lower()
+        except Exception as e:
+            print("Error recognizing speech:", e)
+            return ""
+
+def read_screen():
+    screenshot = ImageGrab.grab()
+    text = pytesseract.image_to_string(screenshot)
+    print(text)  # The assistant can process this text further
+
+def open_website(command):
+    for site, url in websites.items():
+        if f"open {site}" in command:
+            say(f"Opening {site}")
+            webbrowser.open(url)
+            return True
+    return False
+
+def play_spotify():
+    say("Do you want to play a song or a playlist?")
+    choice = take_command()
+
+    if "song" in choice:
+        say("Which song do you want to play?")
+        song_name = take_command()
+        if not song_name:
+            say("I couldn't understand the song name.")
+            return
+
+        results = sp.search(q=song_name, type="track", limit=1)
+        if results["tracks"]["items"]:
+            track_uri = results["tracks"]["items"][0]["uri"]
+            sp.start_playback(uris=[track_uri])
+            say(f"Playing {song_name} on Spotify")
+        else:
+            say("I couldn't find the song on Spotify")
+
+    elif "playlist" in choice:
+        say("Which playlist do you want to play?")
+        playlist_name = take_command()
+        if not playlist_name:
+            say("I couldn't understand the playlist name.")
+            return
+
+        results = sp.search(q=playlist_name, type="playlist", limit=1)
+        if results["playlists"]["items"]:
+            playlist_uri = results["playlists"]["items"][0]["uri"]
+            sp.start_playback(context_uri=playlist_uri)
+            say(f"Playing the playlist {playlist_name} on Spotify")
+        else:
+            say("I couldn't find the playlist on Spotify")
+
+if __name__ == "__main__":
+    say("Hello! I am your voice assistant.")
+    print("Voice Assistant Running...")
+
+    while True:
+        text = take_command()
+
+        if open_website(text):
+            continue
+
+        if "play spotify" in text:
+            play_spotify()
+
+        if "the time" in text:
+            current_time = datetime.datetime.now().strftime("%H:%M:%S")
+            say(f"Sir, the time is {current_time}")
+            print(f"The time is {current_time}")
