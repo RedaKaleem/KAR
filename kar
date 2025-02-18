@@ -4,16 +4,21 @@ import pyttsx3
 import webbrowser
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-import wikipedia
-import pyautogui
 import time
 import pytesseract
-from PIL import ImageGrab
+from gtts import gTTS
+import os
+import subprocess
+import platform
 
 engine = pyttsx3.init()
-engine.setProperty('rate', 200)
+engine.setProperty('rate', 195)
 engine.setProperty('volume', 1.0)
-
+voices = engine.getProperty('voices')
+for voice in voices:
+        if "UK" in voice.name or "British" in voice.name or "en-gb" in voice.id:
+            engine.setProperty('voice', voice.id)
+            break
 SPOTIPY_CLIENT_ID = "5aacd5d171ff4e95b1615ac82436a7a1"
 SPOTIPY_CLIENT_SECRET = "e1451db628f048a29c4557041ef10d93"
 SPOTIPY_REDIRECT_URI = "http://localhost:8888/callback"
@@ -29,10 +34,29 @@ websites = {
     "wikipedia": "https://www.wikipedia.org"
 }
 
-def say(text):
-    engine.say(text)
-    engine.runAndWait()
+def get_active_window():
+    system = platform.system()
 
+    if system == "Windows":
+        import pygetwindow as gw
+        window = gw.getActiveWindow()
+        return window.title if window else "Unknown Window"
+
+    elif system == "Darwin":
+        script = 'tell application "System Events" to get name of (processes whose frontmost is true)'
+        result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
+        return result.stdout.strip()
+
+    else:
+        return "Unsupported OS"
+
+print("Active Window:", get_active_window())
+
+def say(text):
+
+    tts = gTTS(text=text, lang="en", tld="co.uk")
+    tts.save("speech.mp3")
+    os.system("afplay speech.mp3")
 
 def take_command():
     r = sr.Recognizer()
@@ -50,10 +74,13 @@ def take_command():
             print("Error recognizing speech:", e)
             return ""
 
-def read_screen():
-    screenshot = ImageGrab.grab()
-    text = pytesseract.image_to_string(screenshot)
-    print(text)  # The assistant can process this text further
+def open_app(app_name):
+    try:
+        subprocess.run(["open", "-a", app_name])
+        say(f"Opening {app_name}")
+    except Exception as e:
+        say(f"Sorry, I couldn't open {app_name}.")
+        print(e)
 
 def open_website(command):
     for site, url in websites.items():
@@ -62,6 +89,16 @@ def open_website(command):
             webbrowser.open(url)
             return True
     return False
+
+def search_google(query):
+    url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+    webbrowser.open(url)
+    say(f"Searching Google for {query}")
+
+def search_youtube(query):
+    url = f"https://www.youtube.com/results?search_query={query.replace(' ', '+')}"
+    webbrowser.open(url)
+    say(f"Searching YouTube for {query}")
 
 def play_spotify():
     say("Do you want to play a song or a playlist?")
@@ -98,7 +135,8 @@ def play_spotify():
             say("I couldn't find the playlist on Spotify")
 
 if __name__ == "__main__":
-    say("Hello! I am your voice assistant.")
+    say("hello i am you virtual assistant, eve . "
+        "how may i be of assistance")
     print("Voice Assistant Running...")
 
     while True:
@@ -106,6 +144,17 @@ if __name__ == "__main__":
 
         if open_website(text):
             continue
+        if "search google for" in text:
+            query = text.replace("search google for", "").strip()
+            search_google(query)
+
+        elif "search youtube for" in text:
+            query = text.replace("search youtube for", "").strip()
+            search_youtube(query)
+
+        elif "open" in text:
+            app_name = text.replace("open", "").strip()
+            open_app(app_name)
 
         if "play spotify" in text:
             play_spotify()
