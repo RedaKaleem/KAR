@@ -10,6 +10,7 @@ from gtts import gTTS
 import os
 import subprocess
 import platform
+import pywhatkit as kit
 
 engine = pyttsx3.init()
 engine.setProperty('rate', 195)
@@ -74,6 +75,14 @@ def take_command():
             print("Error recognizing speech:", e)
             return ""
 
+def call_phone(number):
+    say(f"Calling {number}...")
+    os.system(f"osascript -e 'tell application \"FaceTime\" to dial \"{number}\"'")
+
+def call_whatsapp(number):
+    say(f"Calling {number} on WhatsApp...")
+    kit.sendwhatmsg_instantly(f"+{number}", "Hello!", wait_time=10, tab_close=True)
+
 def open_app(app_name):
     try:
         subprocess.run(["open", "-a", app_name])
@@ -89,6 +98,7 @@ def open_website(command):
             webbrowser.open(url)
             return True
     return False
+
 
 def search_google(query):
     url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
@@ -141,7 +151,14 @@ if __name__ == "__main__":
 
     while True:
         text = take_command()
+        if "call" in text:
+            say("Which number do you want to call?")
+            number = take_command()
 
+            if "whatsapp" in text:
+                call_whatsapp(number)
+            else:
+                call_phone(number)
         if open_website(text):
             continue
         if "search google for" in text:
