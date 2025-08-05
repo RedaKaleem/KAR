@@ -1,3 +1,4 @@
-api_key = "sk_4816daafa1edb5ccad31655fc3d30e2eb7765100ff4aae66
-voice_id="OP1zKbZPCC9YwoUZ9fDT"
-sael_hi_reda.mp3
+---
+ollama
+elevenlabs
+gtts 
