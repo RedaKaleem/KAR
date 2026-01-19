@@ -1,47 +1,73 @@
-# KAR
+<div align="center">
+  
+# Sael
+### A Research-Oriented Emotionally Aware Conversational AI with Personality and Long-Term Memory
 
-## AI-Integrated Smart Headset
+</div>
 
-# Overview
+---
 
-The AI-Integrated Smart Headset is a lightweight device that works as a standalone solution for all audio needs. It features built-in AI, eSIM support, and sound suppression, eliminating the need for a phone.
+## Abstract
 
-# Features
+Sael is a research-focused project that explores how conversational AI systems can move beyond purely informational responses toward **emotionally aware, personality-consistent, and memory-driven interactions**.
 
-AI Assistant: Hands-free control for calls, messages, and entertainment.
+The goal of this project is to investigate how **emotion modeling, long-term memory, and personality constraints** can be integrated into a large language model based system to create more **human-like, coherent, and emotionally appropriate conversations** over long time spans.
 
-Connectivity: eSIM for 4G/5G, Bluetooth 5.3, Wi-Fi 6E, and NFC.
+---
 
-Audio Quality: High-fidelity sound drivers and advanced noise cancellation.
+## Motivation
 
-Design: Lightweight, ergonomic materials like graphene and memory foam.
+Most modern conversational AI systems are optimized for:
 
-Battery: Long-lasting lithium-polymer battery with USB-C fast charging.
+- Answering questions  
+- Following instructions  
+- Producing correct information  
 
-Security: Voice recognition and end-to-end encryption.
+However, they are **not designed to maintain emotional continuity, personality consistency, or long-term relational context**.
 
-# Technical Specs
+Human conversation is not only about information exchange — it is also about:
 
-Processor: ARM-based for AI and connectivity.
+- Emotion  
+- Tone  
+- Memory  
+- Relationship continuity  
 
-Memory: 2-4GB RAM, 32-128GB storage.
+Sael is an attempt to study and prototype systems that operate in this space.
 
-Sensors: Accelerometer, gyroscope, proximity, and heart rate.
+---
 
-Materials: Graphene-reinforced plastic and carbon fiber.
+## Research Objectives
 
-Software: Custom OS with AI support and secure communication.
+This project aims to explore:
 
-# How to Use
+- How can an AI system **model and respond to user emotions** in a consistent way?
+- How can **long-term and short-term memory** be structured for conversational continuity?
+- How can a **stable personality layer** be imposed on top of a generative model?
+- How can responses be shaped not only by *what* is said, but by **how it should be said**?
 
-Power On/Off: Hold the power button for 3 seconds.
+---
 
-Pairing: Use NFC or Bluetooth to connect.
+## Core Ideas
 
-eSIM: Activate via the app.
+-  **Emotion-Aware Response Generation**  
+-  **Hybrid Memory System (Short-term + Long-term)**  
+-  **Personality-Constrained Decoding Layer**  
+-  **Paralinguistic Expression (tone, pacing, softness, etc.)**  
+-  **Long-Horizon Conversational Consistency**
 
-AI Assistant: Say "Hey [Assistant Name]" for hands-free control.
+---
 
-Charging: USB-C fast charging (90 minutes for a full charge).
+## Conceptual Architecture
 
-
+```text
+User Input
+    ↓
+Emotion & Intent Analyzer
+    ↓
+Context + Memory Retrieval
+    ↓
+LLM Core
+    ↓
+Personality & Tone Shaping Layer
+    ↓
+Response (Text / Voice)
